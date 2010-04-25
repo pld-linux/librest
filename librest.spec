@@ -1,15 +1,24 @@
+#
+# Conditional build
+%bcond_without  apidocs #disable gtk-doc
+#
 %define     _packname rest
 Summary:	Library for accessing RESTful services
 Name:		librest
-Version:	0.6
+Version:	0.6.1
 Release:	1
 License:	LGPL v2.1
 Group:		Libraries
-Source0:	http://moblin.org/sites/all/files/%{_packname}-%{version}.tar.gz
-# Source0-md5:	8f27683999eeb1de96ca2d955348b578
+#Source0:	http://moblin.org/sites/all/files/%{_packname}-%{version}.tar.gz
+# Since the projects repository vanished we'll borrow the package from Debian
+Source0:	http://ftp.debian.org/debian/pool/main/libr/%{name}/%{name}_%{version}.orig.tar.gz
+# Source0-md5:	4cd7bb394027ae36b67fdf874898b9fa
 URL:		http://moblin.org/projects/librest
+BuildRequires:	autoconf
+BuildRequires:	automake
+%{?with_apidocs:BuildRequires:  gtk-doc >= 1.7}
 BuildRequires:	libsoup-gnome-devel
-Requires:	libsoup-gnome
+BuildRequires:	libtool
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -37,37 +46,69 @@ Requires:	%{name}-devel = %{version}-%{release}
 %description static
 Static librest library.
 
+%package apidocs
+Summary:        Librest library API documentation
+Summary(pl.UTF-8):      Dokumentacja API biblioteki librest.
+Group:          Documentation
+Requires:       gtk-doc-common
+
+%description apidocs
+Librest library API documentation.
+
+%description apidocs -l pl.UTF-8
+Dokumentacja API biblioteki librest.
+
 %prep
-%setup -q -n %{_packname}-%{version}
+%setup -q
 
 %build
-%configure
+%{__libtoolize}
+%{__gtkdocize}
+%{__aclocal}
+%{__autoconf}
+%{__autoheader}
+%{__automake}
+%configure \
+	--%{?with_apidocs:en}%{!?with_apidocs:dis}able-gtk-doc
+
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+	DESTDIR=$RPM_BUILD_ROOT \
+	HTML_DIR=%{_gtkdocdir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post   -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog COPYING INSTALL NEWS README
-%doc %{_datadir}/gtk-doc/*
 %attr(755,root,root) %{_libdir}/lib*.so.*
 
 %files devel
 %defattr(644,root,root,755)
 %{_libdir}/lib*.so
 %{_libdir}/lib*.la
-%dir %{_includedir}/%{_packname}/
-%dir %{_includedir}/%{_packname}/%{_packname}
-%{_includedir}/%{_packname}/%{_packname}/*
+%dir %{_includedir}/%{_packname}-0.6/
+%dir %{_includedir}/%{_packname}-0.6/%{_packname}
+%{_includedir}/%{_packname}-0.6/%{_packname}/*.h
+%dir %{_includedir}/%{_packname}-0.6/rest-extras
+%dir %{_includedir}/%{_packname}-0.6/rest-extras/*.h
 %{_pkgconfigdir}/*.pc
 
 %files static
 %defattr(644,root,root,755)
 %{_libdir}/lib*.a
+
+%if %{with apidocs}
+%files apidocs
+%defattr(644,root,root,755)
+%{_gtkdocdir}/%{_packname}-0.6
+%endif
