@@ -11,14 +11,16 @@ License:	LGPL v2.1
 Group:		Libraries
 #Source0:	http://moblin.org/sites/all/files/%{_packname}-%{version}.tar.gz
 # Since the projects repository vanished we'll borrow the package from Debian
-Source0:	http://ftp.debian.org/debian/pool/main/libr/%{name}/%{name}_%{version}.orig.tar.gz
+Source0:	http://ftp.debian.org/debian/pool/main/libr/librest/%{name}_%{version}.orig.tar.gz
 # Source0-md5:	4cd7bb394027ae36b67fdf874898b9fa
 URL:		http://moblin.org/projects/librest
 BuildRequires:	autoconf
 BuildRequires:	automake
-%{?with_apidocs:BuildRequires:  gtk-doc >= 1.7}
+BuildRequires:	docbook-dtd412-xml
+%{?with_apidocs:BuildRequires:	gtk-doc >= 1.7}
 BuildRequires:	libsoup-gnome-devel
 BuildRequires:	libtool
+BuildRequires:	pkgconfig
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -47,10 +49,10 @@ Requires:	%{name}-devel = %{version}-%{release}
 Static librest library.
 
 %package apidocs
-Summary:        Librest library API documentation
-Summary(pl.UTF-8):      Dokumentacja API biblioteki librest.
-Group:          Documentation
-Requires:       gtk-doc-common
+Summary:	Librest library API documentation
+Summary(pl.UTF-8):	Dokumentacja API biblioteki librest.
+Group:		Documentation
+Requires:	gtk-doc-common
 
 %description apidocs
 Librest library API documentation.
