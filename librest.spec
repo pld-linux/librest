@@ -9,11 +9,12 @@ Summary:	A library for access to RESTful web services
 Summary(pl.UTF-8):	Biblioteka dostępu do REST-owych serwisów WWW
 Name:		librest
 Version:	0.10.2
-Release:	1
+Release:	2
 License:	LGPL v2
 Group:		Libraries
 Source0:	https://download.gnome.org/sources/librest/0.10/%{name}-%{version}.tar.xz
 # Source0-md5:	32b0ecf86932cd45b4e7078690c8306f
+Patch0:		librest-csprng.patch
 URL:		https://wiki.gnome.org/Projects%282f%29Librest.html
 %{?with_apidocs:BuildRequires:	gi-docgen >= 2021.6}
 BuildRequires:	glib2-devel >= 1:2.44
@@ -109,6 +110,7 @@ Dokumentacja API biblioteki rest.
 
 %prep
 %setup -q
+%patch -P0 -p1
 
 %build
 %meson \
